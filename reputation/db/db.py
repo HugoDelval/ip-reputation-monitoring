@@ -23,6 +23,7 @@ import hashlib
 import random
 import time
 from datetime import datetime
+import ssl
 
 import pymongo
 import psycopg2
@@ -79,16 +80,17 @@ class DB(object):
                 settings.DB['port'],
                 settings.DB['db']
             ),
-            ssl=settings.DB['secured']
+            ssl=settings.DB['secured'],
+            ssl_cert_reqs=ssl.CERT_NONE
         )
 
-        ssl = 'require' if settings.SPAMHAUS_DB['secured'] else None
+        sslmode = 'require' if settings.SPAMHAUS_DB['secured'] else None
         self._connection = psycopg2.connect(database=settings.SPAMHAUS_DB['db'],
                                             user=settings.SPAMHAUS_DB['user'],
                                             password=settings.SPAMHAUS_DB['password'],
                                             host=settings.SPAMHAUS_DB['host'],
                                             port=settings.SPAMHAUS_DB['port'],
-                                            sslmode=ssl)
+                                            sslmode=sslmode)
         self._cursor = self._connection.cursor(cursor_factory=extras.DictCursor)
 
         self._db = self._client[settings.DB['db']]
