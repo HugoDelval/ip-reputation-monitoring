@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-""" Everything you need to deal with the DB is here. """
+""" Everything you need to deal with the databases is here. """
 
 import hashlib
 import random
@@ -43,9 +43,9 @@ A_MONTH_AGO = utils.get_a_month_ago_date()
 TOP_LIMIT = 10
 
 
-class DB(object):
+class Mongo(object):
     """
-        This class is designed to provide everything needed to dial with db
+        This class is designed to provide everything needed to deal with MongoDB
         and to handle the needs of this app such as pushing new document or
         querying existing documents. In other words, this class is a typical
         data access object.
@@ -70,7 +70,7 @@ class DB(object):
 
     def _open(self):
         """
-            Open connection to DB and retrieve collection objects.
+            Open connection to MongoDB and retrieve collection objects.
         """
         self._client = pymongo.MongoClient(
             'mongodb://{}:{}@{}:{}/{}'.format(
@@ -84,15 +84,6 @@ class DB(object):
             ssl_cert_reqs=ssl.CERT_NONE
         )
 
-        sslmode = 'require' if settings.SPAMHAUS_DB['secured'] else None
-        self._connection = psycopg2.connect(database=settings.SPAMHAUS_DB['db'],
-                                            user=settings.SPAMHAUS_DB['user'],
-                                            password=settings.SPAMHAUS_DB['password'],
-                                            host=settings.SPAMHAUS_DB['host'],
-                                            port=settings.SPAMHAUS_DB['port'],
-                                            sslmode=sslmode)
-        self._cursor = self._connection.cursor(cursor_factory=extras.DictCursor)
-
         self._db = self._client[settings.DB['db']]
         self._check_collections_exists()
 
@@ -102,9 +93,8 @@ class DB(object):
         self._archive_collection = self._db[ARCHIVE_COLLECTION]
 
     def _close(self):
-        """ Close db's connection. """
+        """ Close mongo's connection. """
         self._client.close()
-        self._connection.close()
 
     def _check_collections_exists(self):
         """
@@ -180,7 +170,7 @@ class DB(object):
             :param dict input_dict: Expect a dictionary having at least those fields:
                 [IP, filename, weight, source, timestamp]
             :rtype: dict
-            :return: A dictionary ready to be pushed in the db's collection.
+            :return: A dictionary ready to be pushed in the mongo's collection.
         """
         return {
             'ip': input_dict['ip'],
@@ -375,9 +365,50 @@ class DB(object):
 
         return events
 
+
+class Postgres(object):
+    """
+        This class is designed to provide everything needed to deal with postgres
+        In other words, this class is a typical data access object.
+    """
+
+    def __init__(self):
+        """
+            Constructor that only aims to init members and random numbers
+            generator.
+        """
+        random.seed(time.time())
+
+        self._ip_cache = []
+
+    def __enter__(self):
+        self._open()
+        return self
+
+    def __exit__(self, type_exc, value, traceback):
+        self._close()
+        return False
+
+    def _open(self):
+        """
+            Open connection to PostgreSQL
+        """
+        sslmode = 'require' if settings.SPAMHAUS_DB['secured'] else None
+        self._connection = psycopg2.connect(database=settings.SPAMHAUS_DB['db'],
+                                            user=settings.SPAMHAUS_DB['user'],
+                                            password=settings.SPAMHAUS_DB['password'],
+                                            host=settings.SPAMHAUS_DB['host'],
+                                            port=settings.SPAMHAUS_DB['port'],
+                                            sslmode=sslmode)
+        self._cursor = self._connection.cursor(cursor_factory=extras.DictCursor)
+
+    def _close(self):
+        """ Close db's connection. """
+        self._connection.close()
+
     def update_spamhaus_entries(self, documents):
         """
-            Update or insert an spamhaus entries into the spamhaus db collection. For each entry that
+            Update or insert a spamhaus entry into the spamhaus table. For each entry that
             is no longer active, update them to set their attr `active` to false.
 
             :param list documents: List of dictionaries representing documents to upsert having at least
