@@ -390,16 +390,16 @@ class DB(object):
             self._cursor.execute("INSERT INTO spamhaus (sbl_number, cidr) "
                                  "VALUES (%s, %s) "
                                  "ON CONFLICT (sbl_number) DO UPDATE SET "
-                                 "   last_seen = %s "
+                                 "   last_seen = %s,"
                                  "   active = TRUE",
-                                (document['sbl_number'], document['cidr'], now))
+                                 (document['sbl_number'], document['cidr'], now))
 
         # Now, set inactive all active documents that are not in documents
         active_ids = [doc['sbl_number'] for doc in documents]
         self._cursor.execute("UPDATE spamhaus "
                              "SET active = FALSE "
                              "WHERE active = TRUE AND sbl_number NOT IN %s",
-                            (active_ids,))
+                             (tuple(active_ids),))
 
         self._connection.commit()
 
