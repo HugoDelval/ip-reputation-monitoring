@@ -20,7 +20,7 @@
 """ Global solution settings """
 
 import logging
-import os
+import secret_manager
 
 #: Tells the app which implementations to load
 CUSTOM_IMPLEMENTATIONS = (
@@ -39,34 +39,34 @@ LOGGER = {
 
 #: DB settings
 DB = {
-    'host': os.getenv('DB_HOST'),
-    'port': os.getenv('DB_PORT'),
-    'db': os.getenv('DB_NAME'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
+    'host': secret_manager.secrets['MONGO_HOST'],
+    'port': secret_manager.secrets['MONGO_PORT'],
+    'db': secret_manager.secrets['MONGO_DB_NAME'],
+    'user': secret_manager.secrets['MONGO_USER'],
+    'password': secret_manager.secrets['MONGO_PASSWORD'],
     'secured': True
 }
 SPAMHAUS_DB = {
-    'host': os.getenv('SPAMHAUS_DB_HOST'),
-    'port': os.getenv('SPAMHAUS_DB_PORT'),
-    'db': os.getenv('SPAMHAUS_DB'),
-    'user': os.getenv('SPAMHAUS_DB_USER'),
-    'password': os.getenv('SPAMHAUS_DB_PASSWORD'),
+    'host': secret_manager.secrets['POSTGRES_HOST'],
+    'port': secret_manager.secrets['POSTGRES_PORT'],
+    'db': secret_manager.secrets['SPAMHAUS_DB'],
+    'user': secret_manager.secrets['POSTGRES_USER'],
+    'password': secret_manager.secrets['POSTGRES_PASSWORD'],
     'secured': True
 }
 
 #: Global Email settings (inbox creds, header and reporting)
 SCORING_EMAIL = {
-    'host': os.getenv('EMAIL_HOST'),
+    'host': secret_manager.secrets['EMAIL_HOST'],
     'reporting': {
-        'from': os.getenv('REPORTING_SENDER'),
-        'to': os.getenv('REPORTING_TARGET')
+        'from': secret_manager.secrets['REPORTING_SENDER'],
+        'to': secret_manager.secrets['REPORTING_TARGET']
     },
     'polling': {
-        'user': os.getenv('FBL_USER'),
-        'password': os.getenv('FBL_PASSWORD')
+        'user': secret_manager.secrets['FBL_USER'],
+        'password': secret_manager.secrets['FBL_PASSWORD']
     },
-    'partner_header': os.getenv('FBL_PARTNER_HEADER')
+    'partner_header': secret_manager.secrets['FBL_PARTNER_HEADER']
 }
 
 #: Flask configuration

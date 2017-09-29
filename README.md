@@ -108,17 +108,37 @@ variables:
  * `FBL_PASSWORD`: password for previous username
  * `FBL_PARTNER_HEADER`: Name of the header defining e-mail source (see next
  section)
- * `DB_HOST`: ip or domain of your PostgreSQL DB host
- * `DB_PORT`: port to reach PostgreSQL
- * `DB_NAME`: name of the PostgreSQL database
- * `DB_USER`: PostgreSQL user
- * `DB_PASSWORD`: PostgreSQL password
+ * `POSTGRES_HOST`: ip or domain of your PostgreSQL DB host
+ * `POSTGRES_PORT`: port to reach PostgreSQL
+ * `POSTGRES_MONGO_DB_NAME`: name of the PostgreSQL database
+ * `POSTGRES_USER`: PostgreSQL user
+ * `POSTGRES_PASSWORD`: PostgreSQL password
+ * `MONGO_HOST`: ip or domain of your MongoDB host
+ * `MONGO_PORT`: port to reach MongoDB
+ * `MONGO_DB_NAME`: name of the Mongo database
+ * `MONGO_USER`: MongoDB user
+ * `MONGO_PASSWORD`: MongoDB password
  * `REPORTING_TARGET`: e-mail address where a daily report about ips with the
  worst reputation must be sent
  * `REPORTING_SENDER`: `From:` header value of the daily report e-mail
  * `SNDS_KEY`: your personal SNDS key
  * `SPAMHAUS_DOMAIN_NAME`: the domain your IPs are attached to, i.e.: OVH one
  is `ovh.net`
+
+If you need to, you can also store all these variables in Vault as a json, under the key `ip-reputation/config`,
+the JSON should look something like this:
+```json
+{
+  "AS_NUMBER": 16276,
+  "EMAIL_HOST": "test@test.org",
+  ...
+}
+```
+
+You'll also need to provide 2 environment variables:
+
+ * `VAULT_URL`: The url of the vault application (ex: https://localhost:468/vault/)
+ * `VAULT_TOKEN`: The auth token for the vault application
 
 ### Tagging incoming e-mails ###
 
