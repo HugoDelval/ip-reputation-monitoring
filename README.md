@@ -110,7 +110,7 @@ variables:
  section)
  * `POSTGRES_HOST`: ip or domain of your PostgreSQL DB host
  * `POSTGRES_PORT`: port to reach PostgreSQL
- * `POSTGRES_MONGO_DB_NAME`: name of the PostgreSQL database
+ * `POSTGRES_DB_NAME`: name of the PostgreSQL database
  * `POSTGRES_USER`: PostgreSQL user
  * `POSTGRES_PASSWORD`: PostgreSQL password
  * `MONGO_HOST`: ip or domain of your MongoDB host
